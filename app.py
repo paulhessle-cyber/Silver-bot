@@ -4,7 +4,6 @@ import time
 
 BOT_TOKEN = "8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA"
 CHAT_ID = "1762390606"
-API_KEY = "9VXR0OI5ADM0C80W"
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
@@ -12,25 +11,25 @@ def send_telegram(message):
     requests.post(url, data=payload)
 
 def get_data():
-    print("Bot is running...")
-    url = f"https://www.alphavantage.co/query?function=FX_INTRADAY&from_symbol=XAG&to_symbol=USD&interval=5min&outputsize=compact&apikey={API_KEY}"
+    url = "https://query1.finance.yahoo.com/v8/finance/chart/XAGUSD=X?interval=5m&range=1d"
     response = requests.get(url)
     data = response.json()
 
-    if "Time Series FX (5min)" not in data:
+    try:
+        timestamps = data["chart"]["result"][0]["timestamp"]
+        quotes = data["chart"]["result"][0]["indicators"]["quote"][0]
+    except:
         print("API ERROR:", data)
         return None
 
-    df = pd.DataFrame.from_dict(data["Time Series FX (5min)"], orient="index")
-    df = df.rename(columns={
-        "1. open": "open",
-        "2. high": "high",
-        "3. low": "low",
-        "4. close": "close"
+    df = pd.DataFrame({
+        "open": quotes["open"],
+        "high": quotes["high"],
+        "low": quotes["low"],
+        "close": quotes["close"]
     })
 
-    df = df.astype(float)
-    df = df.sort_index()
+    df = df.dropna()
     return df
 
 def compute_rsi(series, period=14):
@@ -48,7 +47,7 @@ while True:
     try:
         df = get_data()
 
-        if df is None:
+        if df is None or len(df) < 30:
             time.sleep(300)
             continue
 
