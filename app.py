@@ -13,9 +13,18 @@ def send_telegram(message):
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, data=payload)
 
-def get_data():
+df = get_data()
+if df is None:
+    time.sleep(300)
+    continue
     url = f"https://api.twelvedata.com/time_series?symbol={SYMBOL}&interval=5min&outputsize=100&apikey={API_KEY}"
-    data = requests.get(url).json()
+    response = requests.get(url)
+    data = response.json()
+
+    if "values" not in data:
+        print("API ERROR:", data)
+        return None
+
     df = pd.DataFrame(data["values"])
     df = df.astype(float)
     df = df.iloc[::-1]
