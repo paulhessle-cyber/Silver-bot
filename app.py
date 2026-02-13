@@ -6,7 +6,7 @@ BOT_TOKEN = "8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA"
 CHAT_ID = "1762390606"
 API_KEY = "b86bc49f64ff406eb5a3b37d8898e861"
 
-SYMBOL = "XAGUSD"
+SYMBOL = "XAG/USD"
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA}/sendMessage"
