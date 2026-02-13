@@ -2,8 +2,8 @@ import requests
 import pandas as pd
 import time
 
-BOT_TOKEN = "PASTE_TELEGRAM_TOKEN"
-CHAT_ID = "PASTE_CHAT_ID"
+BOT_TOKEN = "8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA"
+CHAT_ID = "1762390606"
 API_KEY = "PASTE_TWELVEDATA_KEY"
 
 SYMBOL = "XAG/USD"
