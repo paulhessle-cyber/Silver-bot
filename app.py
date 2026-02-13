@@ -9,7 +9,7 @@ API_KEY = "PASTE_TWELVEDATA_KEY"
 SYMBOL = "XAG/USD"
 
 def send_telegram(message):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, data=payload)
 
