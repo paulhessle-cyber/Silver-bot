@@ -2,21 +2,18 @@ import requests
 import pandas as pd
 import time
 
-BOT_TOKEN = "8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA"
+BOT_TOKEN = "8332944943:AAGcS4fhzqU_0EnYjr1AF3gI1tNoQma_1RA"
 CHAT_ID = "1762390606"
 API_KEY = "b86bc49f64ff406eb5a3b37d8898e861"
 
 SYMBOL = "XAG/USD"
 
 def send_telegram(message):
-    url = f"https://api.telegram.org/bot{8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA}/sendMessage"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     requests.post(url, data=payload)
 
-df = get_data()
-if df is None:
-    time.sleep(300)
-    continue
+def get_data():
     url = f"https://api.twelvedata.com/time_series?symbol={SYMBOL}&interval=5min&outputsize=100&apikey={API_KEY}"
     response = requests.get(url)
     data = response.json()
@@ -45,6 +42,10 @@ while True:
     try:
         df = get_data()
 
+        if df is None:
+            time.sleep(300)
+            continue
+
         df["ema9"] = df["close"].ewm(span=9).mean()
         df["ema21"] = df["close"].ewm(span=21).mean()
         df["rsi"] = compute_rsi(df["close"])
@@ -66,5 +67,5 @@ while True:
         time.sleep(300)
 
     except Exception as e:
-        print("Error:", e)
+        print("Runtime Error:", e)
         time.sleep(300)
