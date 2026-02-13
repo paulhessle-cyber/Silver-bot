@@ -11,25 +11,26 @@ def send_telegram(message):
     requests.post(url, data=payload)
 
 def get_data():
-    url = "https://query1.finance.yahoo.com/v8/finance/chart/XAGUSD=X?interval=5m&range=1d"
+    url = "https://stooq.com/q/d/l/?s=xagusd&i=5"
     response = requests.get(url)
-    data = response.json()
 
-    try:
-        timestamps = data["chart"]["result"][0]["timestamp"]
-        quotes = data["chart"]["result"][0]["indicators"]["quote"][0]
-    except:
-        print("API ERROR:", data)
+    if response.status_code != 200:
+        print("API ERROR:", response.text)
         return None
 
-    df = pd.DataFrame({
-        "open": quotes["open"],
-        "high": quotes["high"],
-        "low": quotes["low"],
-        "close": quotes["close"]
+    from io import StringIO
+    df = pd.read_csv(StringIO(response.text))
+
+    if df.empty:
+        return None
+
+    df = df.rename(columns={
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Close": "close"
     })
 
-    df = df.dropna()
     return df
 
 def compute_rsi(series, period=14):
