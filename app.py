@@ -14,7 +14,7 @@ def send_telegram(message):
     requests.post(url, data=payload)
 
 def get_data():
-    url = f"https://api.twelvedata.com/time_series?symbol={SYMBOL}&interval=5min&outputsize=100&apikey={API_KEY}"
+    url = f"https://api.twelvedata.com/time_series?symbol={XAGUSD}&interval=5min&outputsize=100&apikey={API_KEY}"
     data = requests.get(url).json()
     df = pd.DataFrame(data["values"])
     df = df.astype(float)
