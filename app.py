@@ -6,7 +6,7 @@ BOT_TOKEN = "8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA"
 CHAT_ID = "1762390606"
 API_KEY = "b86bc49f64ff406eb5a3b37d8898e861"
 
-SYMBOL = "XAG/USD"
+SYMBOL = "XAGUSD"
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA}/sendMessage"
@@ -14,7 +14,7 @@ def send_telegram(message):
     requests.post(url, data=payload)
 
 def get_data():
-    url = f"https://api.twelvedata.com/time_series?symbol={XAGUSD}&interval=5min&outputsize=100&apikey={API_KEY}"
+    url = f"https://api.twelvedata.com/time_series?symbol={SYMBOL}&interval=5min&outputsize=100&apikey={API_KEY}"
     data = requests.get(url).json()
     df = pd.DataFrame(data["values"])
     df = df.astype(float)
