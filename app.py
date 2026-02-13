@@ -12,6 +12,7 @@ def send_telegram(message):
     requests.post(url, data=payload)
 
 def get_data():
+    print("Bot is running...")
     url = f"https://www.alphavantage.co/query?function=FX_INTRADAY&from_symbol=XAG&to_symbol=USD&interval=5min&outputsize=compact&apikey={API_KEY}"
     response = requests.get(url)
     data = response.json()
