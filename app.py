@@ -3,25 +3,32 @@ import pandas as pd
 import time
 import os
 
-BOT_TOKEN = os.getenv("8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA")
-CHAT_ID = os.getenv("1762390606")
+# Load Railway environment variables
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": message}
-    requests.post(url, data=payload)
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": message
+    }
+    response = requests.post(url, data=payload)
+    print("Telegram response:", response.text)
 
 def get_data():
     url = "https://stooq.com/q/d/l/?s=xagusd&i=5"
     response = requests.get(url)
 
     if response.status_code != 200:
+        print("Data fetch failed")
         return None
 
     from io import StringIO
     df = pd.read_csv(StringIO(response.text))
 
     if df.empty:
+        print("Empty dataframe")
         return None
 
     df = df.rename(columns={
@@ -42,11 +49,13 @@ def compute_rsi(series, period=14):
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
 
-last_signal = None
 
 print("Bot is running...")
 
-send_telegram("Bot successfully started")
+# Startup test message
+send_telegram("Silver bot is now online")
+
+last_signal = None
 
 while True:
     try:
@@ -80,7 +89,8 @@ while True:
             signal = "TREND SHORT"
 
         if signal and signal != last_signal:
-            send_telegram(f"{signal}\nPrice: {df['close'].iloc[-1]}")
+            price = df["close"].iloc[-1]
+            send_telegram(f"{signal}\nPrice: {price}")
             last_signal = signal
 
         time.sleep(300)
