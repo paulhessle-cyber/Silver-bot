@@ -145,7 +145,9 @@ while True:
             send_telegram(f"{signal}\nPrice: {price}")
             last_signal = signal
             print("Signal sent:", signal)
-print("Heartbeat check complete")
+     
+        print("Heartbeat check complete")
+        
         time.sleep(CHECK_INTERVAL)
 
     except Exception as e:
