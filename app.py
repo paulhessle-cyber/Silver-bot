@@ -68,7 +68,6 @@ def compute_rsi(series, period=14):
 # =============================
 # MAIN LOOP
 # =============================
-
 last_signal = None
 
 while True:
@@ -84,10 +83,7 @@ while True:
         df["ema21"] = df["close"].ewm(span=21).mean()
         df["rsi"] = compute_rsi(df["close"])
 
-        # =============================
         # REVERSAL ENGINE
-        # =============================
-
         reversal_long = (
             df["rsi"].iloc[-5:-1].min() < 30 and
             df["rsi"].iloc[-2] < 45 and df["rsi"].iloc[-1] > 45 and
@@ -102,10 +98,7 @@ while True:
             df["ema9"].iloc[-1] < df["ema9"].iloc[-2]
         )
 
-        # =============================
         # TREND ENGINE
-        # =============================
-
         trend_long = (
             df["ema9"].iloc[-1] > df["ema21"].iloc[-1] and
             df["rsi"].iloc[-2] < 50 and df["rsi"].iloc[-1] > 50 and
@@ -118,38 +111,27 @@ while True:
             df["close"].iloc[-1] < df["low"].iloc[-2]
         )
 
-        # =============================
-        # SIGNAL DECISION
-        # =============================
-
         signal = None
 
         if reversal_long:
             signal = "🟢 REVERSAL LONG"
-
         elif reversal_short:
             signal = "🔴 REVERSAL SHORT"
-
         elif trend_long:
             signal = "🔵 TREND LONG"
-
         elif trend_short:
             signal = "🟠 TREND SHORT"
-
-        # =============================
-        # SEND ALERT
-        # =============================
 
         if signal and last_signal != signal:
             price = df["close"].iloc[-1]
             send_telegram(f"{signal}\nPrice: {price}")
             last_signal = signal
             print("Signal sent:", signal)
-     
-        print("Heartbeat check complete")
-        
+
         time.sleep(CHECK_INTERVAL)
 
     except Exception as e:
         print("Runtime Error:", e)
         time.sleep(CHECK_INTERVAL)
+
+        
