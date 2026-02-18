@@ -45,6 +45,7 @@ def compute_rsi(series, period=14):
 last_signal = None
 
 print("Bot is running...")
+
 send_telegram("Bot successfully started")
 
 while True:
