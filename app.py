@@ -3,42 +3,52 @@ import pandas as pd
 import time
 import os
 
-# Load Railway environment variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 def send_telegram(message):
+    if not BOT_TOKEN or not CHAT_ID:
+        print("Missing Telegram credentials")
+        return
+    
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
         "text": message
     }
-    response = requests.post(url, data=payload)
-    print("Telegram response:", response.text)
+    
+    try:
+        r = requests.post(url, data=payload)
+        print("Telegram response:", r.text)
+    except Exception as e:
+        print("Telegram error:", e)
 
 def get_data():
     url = "https://stooq.com/q/d/l/?s=xagusd&i=5"
-    response = requests.get(url)
-
-    if response.status_code != 200:
-        print("Data fetch failed")
+    
+    try:
+        response = requests.get(url)
+        if response.status_code != 200:
+            print("Data fetch failed")
+            return None
+        
+        from io import StringIO
+        df = pd.read_csv(StringIO(response.text))
+        
+        if df.empty:
+            return None
+        
+        df = df.rename(columns={
+            "Open": "open",
+            "High": "high",
+            "Low": "low",
+            "Close": "close"
+        })
+        
+        return df
+    except Exception as e:
+        print("Data error:", e)
         return None
-
-    from io import StringIO
-    df = pd.read_csv(StringIO(response.text))
-
-    if df.empty:
-        print("Empty dataframe")
-        return None
-
-    df = df.rename(columns={
-        "Open": "open",
-        "High": "high",
-        "Low": "low",
-        "Close": "close"
-    })
-
-    return df
 
 def compute_rsi(series, period=14):
     delta = series.diff()
@@ -49,22 +59,19 @@ def compute_rsi(series, period=14):
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
 
-
-print("Bot is running...")
-
-# Startup test message
-send_telegram("Silver bot is now online")
-
 last_signal = None
+
+print("Bot started successfully")
+send_telegram("Bot successfully started")
 
 while True:
     try:
         df = get_data()
-
+        
         if df is None or len(df) < 30:
             time.sleep(300)
             continue
-
+        
         df["ema9"] = df["close"].ewm(span=9).mean()
         df["ema21"] = df["close"].ewm(span=21).mean()
         df["rsi"] = compute_rsi(df["close"])
@@ -96,5 +103,5 @@ while True:
         time.sleep(300)
 
     except Exception as e:
-        print("Runtime Error:", e)
+        print("Runtime error:", e)
         time.sleep(300)
