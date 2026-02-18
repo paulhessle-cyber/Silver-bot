@@ -4,7 +4,7 @@ import time
 import os
 
 BOT_TOKEN = os.getenv("8332944943:AAGcS4fhzqU_OEnYjr1AF3gIltNoQma_1RA")
-CHAT_ID = os.getenv("1762390606")
+CHAT_ID = os.getenv("257334527")
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
